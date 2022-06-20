@@ -16,14 +16,14 @@ function boardSetup(){
     }
     document.getElementById('board').style.height=(dim).toString()+'px';
     document.getElementById('board').style.width=(dim).toString()+'px';
-    console.log(w);
-    console.log(h);
 
     //config for the board
     let config = {
         draggable : true,
         dropOffBoard: 'snapback',
-        position: 'start'
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop
     }
 
     //draw the board

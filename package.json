@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@chrisoakman/chessboardjs": "^1.0.0",
+    "konva": "^8.3.9"
+  }
+}
