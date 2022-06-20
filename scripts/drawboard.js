@@ -1,59 +1,32 @@
-const sceneHeight=1000;
-const sceneWidth=1000;
-const letters=['A','B','C','D','E','F','G','H'];
-let stage;
+/**
+ * This file contains the boardSetup function that generates the initial board
+ * setup.
+ */
 
-function draw(){
-
-    stage = new Konva.Stage({
-        container: 'board',
-        height: sceneHeight,
-        width: sceneWidth,
-
-    });
+let board;
 
 
-    let layer = new Konva.Layer({
-        id: 'board-in'
-    });
-    stage.add(layer);
-
-
-    for (let i=0; i<8; i++) {
-        for (let j = 0; j < 8; j++) {
-            let fill='grey';
-            if ((i+j)%2===0){
-                fill = 'white';
-            }
-            let rect = new Konva.Rect({
-                fill: fill,
-                x: sceneWidth / 8 * i,
-                y: sceneHeight/8 * j,
-                width: sceneWidth/8,
-                height: sceneHeight/8,
-                id: letters[i]+ (8-j).toString(),
-            });
-            layer.add(rect);
-        }
+function boardSetup(){
+    //TODO: Try fixing the size, make it responsive
+    let h = window.innerHeight;
+    let w = window.innerWidth;
+    let dim = 0.9*w;
+    if (h<w){
+        dim = 0.9*h;
     }
-    layer.draw();
+    document.getElementById('board').style.height=(dim).toString()+'px';
+    document.getElementById('board').style.width=(dim).toString()+'px';
+    console.log(w);
+    console.log(h);
 
-    fitStageIntoParentContainer();
+    //config for the board
+    let config = {
+        draggable : true,
+        dropOffBoard: 'snapback',
+        position: 'start'
+    }
+
+    //draw the board
+    board = Chessboard('board',config);
+
 }
-
-function fitStageIntoParentContainer() {
-    var container = document.querySelector('#board');
-
-    // now we need to fit stage into parent container
-    var containerWidth = container.offsetWidth;
-
-
-    // but we also make the full scene visible
-    // so we need to scale all objects on canvas
-    var scale = containerWidth / sceneWidth;
-
-    stage.width(sceneWidth * scale);
-    stage.height(sceneHeight * scale);
-    stage.scale({ x: scale, y: scale });
-}
-
