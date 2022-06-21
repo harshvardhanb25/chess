@@ -57,6 +57,51 @@ function validate(source, target, piece, newPos, oldPos, orientation){
 
 }
 
+
+/**
+ * Helper function to compute diagonal squares from a given square.
+ * Used for computing moves for queens and bishops
+ * @param source the source square
+ * @return {*[]} Array containing squares diagonal to the source square
+ */
+
+function computeDiagonal(source){
+    let row = parseInt(source.split('')[1]);
+    let colIdx = COLUMNS.indexOf(source.split('')[0]);
+    let moves = [];
+
+    for (let diff=1; diff<=7; diff++){
+        if (row+diff<=8){
+            if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row+diff));
+            if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row+diff));
+        }
+        if (row-diff>=1){
+            if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row-diff));
+            if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row-diff));
+        }
+    }
+    // for (let r = row; r<=8; r++){
+    //     for (let c = colIdx; c<=7; c++){
+    //         moves.push(COLUMNS[c]+r);
+    //     }
+    //     for (let c = colIdx; c>=0; c--){
+    //         moves.push(COLUMNS[c]+r);
+    //     }
+    // }
+    //
+    // for (let r = row; r>=1; r--){
+    //     for (let c = colIdx; c<=7; c++){
+    //         moves.push(COLUMNS[c]+r);
+    //     }
+    //     for (let c = colIdx; c>=0; c--){
+    //         moves.push(COLUMNS[c]+r);
+    //     }
+    // }
+
+    return moves;
+}
+
+
 //TODO Write functions to compute all possible moves for each piece
 
 /**
@@ -124,6 +169,12 @@ function computeKnight(source){
     return moves;
 }
 
+function computeBishop(source){
+    let moves = computeDiagonal(source);
+    console.log("All possible moves for Bishop:")
+    console.log(moves);
+    console.log('+++++++++++++++++++++')
+}
 
 //TODO: Implement individual validation functions
 function validateKing(source, target, piece, newPos, oldPos, orientation){
@@ -134,8 +185,13 @@ function validateKnight(source, target, piece, newPos, oldPos, orientation){
     computeKnight(source);
     return true;
 }
+
 function validateQueen(source, target, piece, newPos, oldPos, orientation){}
-function validateBishop(source, target, piece, newPos, oldPos, orientation){}
+
+function validateBishop(source, target, piece, newPos, oldPos, orientation){
+    computeBishop(source);
+    return true;
+}
 function validateRook(source, target, piece, newPos, oldPos, orientation){}
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
     return true;
