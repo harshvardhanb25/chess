@@ -57,11 +57,13 @@ function validate(source, target, piece, newPos, oldPos, orientation){
 
 }
 
-//TODO Write functions to compute all possible moves for each piece assuming an empty board
+//TODO Write functions to compute all possible moves for each piece
+
 /**
  * Computes all the squares a king might go to, without looking at any
  * other factors.
  * @param source current position of the king
+ * @returns {*[]} Array containing all possible squares
  */
 function computeKing(source){
     let row = parseInt(source.split('')[1]);
@@ -76,7 +78,7 @@ function computeKing(source){
             }
         }
     }
-
+    //same row, columns to left and right
     for (let c of [colIdx-1,colIdx+1]){
         if (c>=0 && c<=7){
             moves.push(COLUMNS[c]+row);
@@ -89,17 +91,56 @@ function computeKing(source){
 }
 
 
+/**
+ * Computes all possible squares where the knight might go.
+ * @param source current position of the knight
+ * @returns {*[]} Array containing all possible squares
+ */
+function computeKnight(source){
+    let row = parseInt(source.split('')[1]);
+    let colIdx = COLUMNS.indexOf(source.split('')[0]);
+    let moves = [];
+
+    //Longer step along rows
+    for (let r of [row-2,row+2]){
+        for (let c of [colIdx-1,colIdx+1]){
+            if (r>=1 && r<=8 && c>=0 && c<=7){
+                moves.push(COLUMNS[c]+r);
+            }
+        }
+    }
+
+    //Longer step along columns
+    for (let r of [row-1,row+1]){
+        for (let c of [colIdx-2,colIdx+2]){
+            if (r>=1 && r<=8 && c>=0 && c<=7){
+                moves.push(COLUMNS[c]+r);
+            }
+        }
+    }
+    console.log("All possible moves for knight:")
+    console.log(moves);
+    console.log('+++++++++++++++++++++')
+    return moves;
+}
+
+
 //TODO: Implement individual validation functions
 function validateKing(source, target, piece, newPos, oldPos, orientation){
     computeKing(source);
     return true;
 }
-function validateKnight(source, target, piece, newPos, oldPos, orientation){}
+function validateKnight(source, target, piece, newPos, oldPos, orientation){
+    computeKnight(source);
+    return true;
+}
 function validateQueen(source, target, piece, newPos, oldPos, orientation){}
 function validateBishop(source, target, piece, newPos, oldPos, orientation){}
 function validateRook(source, target, piece, newPos, oldPos, orientation){}
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
     return true;
 }
+
+//TODO: implement a function to check if a given square is in check by opposite color
 
 
