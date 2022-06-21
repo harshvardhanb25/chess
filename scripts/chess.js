@@ -1,3 +1,5 @@
+const COLUMNS = 'abcdefgh'.split('');
+
 /**
  *
  * @param source the source of the piece being dragged
@@ -55,11 +57,41 @@ function validate(source, target, piece, newPos, oldPos, orientation){
 
 }
 
-//TODO Write functions to compute all possible moves for each piece
+//TODO Write functions to compute all possible moves for each piece assuming an empty board
+/**
+ * Computes all the squares a king might go to, without looking at any
+ * other factors.
+ * @param source current position of the king
+ */
+function computeKing(source){
+    let row = parseInt(source.split('')[1]);
+    let colIdx = COLUMNS.indexOf(source.split('')[0]);
+    let moves = [];
+
+    //computes all possible squares in the row above and below the piece
+    for (let r of [row-1,row+1]){
+        for (let c of [colIdx-1,colIdx,colIdx+1]){
+            if (r>=1 && r<=8 && c>=0 && c<=7){
+                moves.push(COLUMNS[c]+r);
+            }
+        }
+    }
+
+    for (let c of [colIdx-1,colIdx+1]){
+        if (c>=0 && c<=7){
+            moves.push(COLUMNS[c]+row);
+        }
+    }
+    console.log("All possible moves for king:")
+    console.log(moves);
+    console.log('+++++++++++++++++++++')
+    return moves;
+}
 
 
 //TODO: Implement individual validation functions
 function validateKing(source, target, piece, newPos, oldPos, orientation){
+    computeKing(source);
     return true;
 }
 function validateKnight(source, target, piece, newPos, oldPos, orientation){}
