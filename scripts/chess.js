@@ -88,25 +88,58 @@ function computeDiagonal(source){
  * Helper function to compute the straight path used for computing
  * moves for queens and rooks.
  * @param source the source square
+ * @param piece the piece being checked for
+ * @param position the position of the board
  * @return {*[]} array of possible squares
  */
-function computeStraight(source){
+function computeStraight(source, piece, position){
     let row = parseInt(source.split('')[1]);
     let col = source.split('')[0];
+    let colIdx = COLUMNS.indexOf(col)
+    let color = piece.split('')[0];
     let moves = [];
 
-    for (let r=1; r<=8; r++){
+    for (let r = row-1; r>=1; r--){
         moves.push(col+r);
+        let pSq = position[col+r];
+        if (pSq!==undefined){
+            if (pSq.startsWith(color)) moves.pop();
+            break;
+        }
     }
 
-    for (let c=0; c<=7; c++){
+    for (let r = row+1; r<=8; r++){
+        moves.push(col+r);
+        let pSq = position[col+r];
+        if (pSq!==undefined){
+            if (pSq.startsWith(color)) moves.pop();
+            break;
+        }
+    }
+
+    for (let c=colIdx-1; c>=0; c--){
         moves.push(COLUMNS[c]+row);
+        let pSq = position[COLUMNS[c]+row];
+        if (pSq!==undefined){
+            if (pSq.startsWith(color)) moves.pop();
+            break;
+        }
+    }
+
+    for (let c=colIdx+1; c<=7; c++){
+        moves.push(COLUMNS[c]+row);
+        let pSq = position[COLUMNS[c]+row];
+        if (pSq!==undefined){
+            if (pSq.startsWith(color)) moves.pop();
+            break;
+        }
     }
 
     return moves;
 }
 
-//TODO Write functions to compute all possible moves for each piece
+//TODO: Write functions to compute all possible moves for each piece
+//TODO: fix computeKing and computeKnight to remove invalid moves
 
 /**
  * Computes all the squares a king might go to, without looking at any
@@ -133,6 +166,7 @@ function computeKing(source){
             moves.push(COLUMNS[c]+row);
         }
     }
+
     console.log("All possible moves for king:")
     console.log(moves);
     console.log('+++++++++++++++++++++')
@@ -180,7 +214,16 @@ function computeBishop(source){
     console.log('+++++++++++++++++++++')
 }
 
+function computeRook(source, piece, position){
+    let moves = computeStraight(source, piece, position);
+    console.log("All possible moves for Rook:");
+    console.log(moves);
+    console.log('+++++++++++++++++++++');
+    return moves;
+}
+
 //TODO: Implement individual validation functions
+//TODO: Check if newPos will be in check if initial move check passes
 function validateKing(source, target, piece, newPos, oldPos, orientation){
     computeKing(source);
     return true;
@@ -196,7 +239,10 @@ function validateBishop(source, target, piece, newPos, oldPos, orientation){
     computeBishop(source);
     return true;
 }
-function validateRook(source, target, piece, newPos, oldPos, orientation){}
+function validateRook(source, target, piece, newPos, oldPos, orientation){
+    if (computeRook(source,piece,oldPos).includes(target)) return true;
+    return false;
+}
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
     return true;
 }
