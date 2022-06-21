@@ -3,7 +3,7 @@
  * setup.
  */
 
-let board;
+let board=null;
 
 
 function boardSetup(){
