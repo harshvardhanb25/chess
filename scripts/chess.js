@@ -80,27 +80,31 @@ function computeDiagonal(source){
             if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row-diff));
         }
     }
-    // for (let r = row; r<=8; r++){
-    //     for (let c = colIdx; c<=7; c++){
-    //         moves.push(COLUMNS[c]+r);
-    //     }
-    //     for (let c = colIdx; c>=0; c--){
-    //         moves.push(COLUMNS[c]+r);
-    //     }
-    // }
-    //
-    // for (let r = row; r>=1; r--){
-    //     for (let c = colIdx; c<=7; c++){
-    //         moves.push(COLUMNS[c]+r);
-    //     }
-    //     for (let c = colIdx; c>=0; c--){
-    //         moves.push(COLUMNS[c]+r);
-    //     }
-    // }
 
     return moves;
 }
 
+/**
+ * Helper function to compute the straight path used for computing
+ * moves for queens and rooks.
+ * @param source the source square
+ * @return {*[]} array of possible squares
+ */
+function computeStraight(source){
+    let row = parseInt(source.split('')[1]);
+    let col = source.split('')[0];
+    let moves = [];
+
+    for (let r=1; r<=8; r++){
+        moves.push(col+r);
+    }
+
+    for (let c=0; c<=7; c++){
+        moves.push(COLUMNS[c]+row);
+    }
+
+    return moves;
+}
 
 //TODO Write functions to compute all possible moves for each piece
 
