@@ -65,11 +65,12 @@ function validate(source, target, piece, newPos, oldPos, orientation){
  * @return {*[]} Array containing squares diagonal to the source square
  */
 
-function computeDiagonal(source){
+function computeDiagonal(source, piece, position){
     let row = parseInt(source.split('')[1]);
     let colIdx = COLUMNS.indexOf(source.split('')[0]);
     let moves = [];
 
+    let stop = [0,0,0,0]
     for (let diff=1; diff<=7; diff++){
         if (row+diff<=8){
             if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row+diff));
