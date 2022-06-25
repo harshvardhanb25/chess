@@ -49,11 +49,12 @@ function validate(source, target, piece, newPos, oldPos, orientation){
     else if (piece.search(/B$/)!==-1) valFunc = validateBishop;
     else if (piece.search(/R$/)!==-1) valFunc = validateRook;
 
-    if (oldPos[target]===undefined){
-        return valFunc(source, target, piece, newPos, oldPos, orientation);
-    }else if(!oldPos[target].startsWith(turn)){
-        return valFunc(source, target, piece, newPos, oldPos, orientation);
-    }
+    return valFunc(source, target, piece, newPos, oldPos, orientation);
+    // if (oldPos[target]===undefined){
+    //     return valFunc(source, target, piece, newPos, oldPos, orientation);
+    // }else if(!oldPos[target].startsWith(turn)){
+    //     return valFunc(source, target, piece, newPos, oldPos, orientation);
+    // }
 
 }
 
@@ -225,16 +226,17 @@ function computeKing(source, piece, position){
  * @param source current position of the knight
  * @returns {*[]} Array containing all possible squares
  */
-function computeKnight(source){
+function computeKnight(source, piece, position){
     let row = parseInt(source.split('')[1]);
     let colIdx = COLUMNS.indexOf(source.split('')[0]);
     let moves = [];
+    let color = piece.split('')[0]
 
     //Longer step along rows
     for (let r of [row-2,row+2]){
         for (let c of [colIdx-1,colIdx+1]){
             if (r>=1 && r<=8 && c>=0 && c<=7){
-                moves.push(COLUMNS[c]+r);
+                computeHelp(color, moves, position, r, c);
             }
         }
     }
@@ -243,7 +245,7 @@ function computeKnight(source){
     for (let r of [row-1,row+1]){
         for (let c of [colIdx-2,colIdx+2]){
             if (r>=1 && r<=8 && c>=0 && c<=7){
-                moves.push(COLUMNS[c]+r);
+                computeHelp(color, moves, position, r, c);
             }
         }
     }
@@ -269,18 +271,32 @@ function computeRook(source, piece, position){
     return moves;
 }
 
+
+function computeQueen(source, piece, position){
+    let moves = computeStraight(source, piece, position);
+    moves = moves.concat(computeDiagonal(source,piece, position));
+    console.log("All possible moves for queen:");
+    console.log(moves);
+    console.log('+++++++++++++++++++++');
+    return moves;
+}
+
+
 //TODO: Implement individual validation functions
 //TODO: Check if newPos will be in check if initial move check passes
 function validateKing(source, target, piece, newPos, oldPos, orientation){
-    computeKing(source,piece,oldPos);
-    return true;
+    if (computeKing(source,piece,oldPos).includes(target)) return true;
+    return false;
 }
 function validateKnight(source, target, piece, newPos, oldPos, orientation){
-    computeKnight(source);
-    return true;
+    if (computeKnight(source,piece,oldPos).includes(target)) return true;
+    return false;
 }
 
-function validateQueen(source, target, piece, newPos, oldPos, orientation){}
+function validateQueen(source, target, piece, newPos, oldPos, orientation){
+    if (computeQueen(source, piece, oldPos).includes(target)) return true;
+    return false;
+}
 
 function validateBishop(source, target, piece, newPos, oldPos, orientation){
     if (computeBishop(source, piece, oldPos).includes(target)) return true;
