@@ -58,8 +58,9 @@ function validate(source, target, piece, newPos, oldPos, orientation){
 }
 
 /**
- * Helper function for computeDiagonal. Adds the square to the moves
- * array if square is reachable.
+ * Helper function for computeFunction. Adds the square to the moves
+ * array if square is reachable and does not contain a piece of the
+ * same color.
  * @param color the color of the piece to move
  * @param moves the array containing reachable squares
  * @param position the current position of the board
@@ -67,7 +68,7 @@ function validate(source, target, piece, newPos, oldPos, orientation){
  * @param colIdx the column index of the square to check
  * @return {number} 0 if there is no piece on the square. 1 otherwise.
  */
-function computeDiagonalHelp(color, moves, position, row, colIdx){
+function computeHelp(color, moves, position, row, colIdx){
     let square = COLUMNS[colIdx]+row;
 
     if (position[square]===undefined){
@@ -98,19 +99,19 @@ function computeDiagonal(source, piece, position){
     for (let diff=1; diff<=7; diff++){
         if (row+diff<=8){
             if (colIdx+diff<=7 && valid[0]){
-                valid[0] = computeDiagonalHelp(color, moves, position, row+diff, colIdx+diff);
+                valid[0] = computeHelp(color, moves, position, row+diff, colIdx+diff);
             }
             if (colIdx-diff>=0 && valid[1]){
-                valid[1] = computeDiagonalHelp(color, moves, position, row+diff, colIdx-diff);
+                valid[1] = computeHelp(color, moves, position, row+diff, colIdx-diff);
             }
         }
 
         if (row-diff>=1){
             if (colIdx+diff<=7 && valid[2]){
-                valid[2] = computeDiagonalHelp(color, moves, position, row-diff, colIdx+diff);
+                valid[2] = computeHelp(color, moves, position, row-diff, colIdx+diff);
             }
             if (colIdx-diff>=0 && valid[3]){
-                valid[3] = computeDiagonalHelp(color, moves, position, row-diff, colIdx-diff);
+                valid[3] = computeHelp(color, moves, position, row-diff, colIdx-diff);
             }
         }
     }
@@ -191,23 +192,24 @@ function computeStraight(source, piece, position){
  * @param source current position of the king
  * @returns {*[]} Array containing all possible squares
  */
-function computeKing(source){
+function computeKing(source, piece, position){
     let row = parseInt(source.split('')[1]);
     let colIdx = COLUMNS.indexOf(source.split('')[0]);
     let moves = [];
+    let color = piece.split('')[0]
 
     //computes all possible squares in the row above and below the piece
     for (let r of [row-1,row+1]){
         for (let c of [colIdx-1,colIdx,colIdx+1]){
             if (r>=1 && r<=8 && c>=0 && c<=7){
-                moves.push(COLUMNS[c]+r);
+                computeHelp(color, moves, position, r, c);
             }
         }
     }
     //same row, columns to left and right
     for (let c of [colIdx-1,colIdx+1]){
         if (c>=0 && c<=7){
-            moves.push(COLUMNS[c]+row);
+            computeHelp(color, moves, position, row, c);
         }
     }
 
@@ -270,7 +272,7 @@ function computeRook(source, piece, position){
 //TODO: Implement individual validation functions
 //TODO: Check if newPos will be in check if initial move check passes
 function validateKing(source, target, piece, newPos, oldPos, orientation){
-    computeKing(source);
+    computeKing(source,piece,oldPos);
     return true;
 }
 function validateKnight(source, target, piece, newPos, oldPos, orientation){
