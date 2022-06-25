@@ -57,7 +57,29 @@ function validate(source, target, piece, newPos, oldPos, orientation){
 
 }
 
+/**
+ * Helper function for computeDiagonal. Adds the square to the moves
+ * array if square is reachable.
+ * @param color the color of the piece to move
+ * @param moves the array containing reachable squares
+ * @param position the current position of the board
+ * @param row the row of the square to check
+ * @param colIdx the column index of the square to check
+ * @return {number} 0 if there is no piece on the square. 1 otherwise.
+ */
+function computeDiagonalHelp(color, moves, position, row, colIdx){
+    let square = COLUMNS[colIdx]+row;
 
+    if (position[square]===undefined){
+        //square is empty
+        moves.push(square);
+        return 1;
+    }else if(!position[square].startsWith(color)){
+        //square has opponent's piece
+        moves.push(square);
+    }
+    return 0;
+}
 /**
  * Helper function to compute diagonal squares from a given square.
  * Used for computing moves for queens and bishops
@@ -69,18 +91,39 @@ function computeDiagonal(source, piece, position){
     let row = parseInt(source.split('')[1]);
     let colIdx = COLUMNS.indexOf(source.split('')[0]);
     let moves = [];
+    let color = piece.split('')[0];
 
-    let stop = [0,0,0,0]
+    let valid = [1,1,1,1]
+
     for (let diff=1; diff<=7; diff++){
         if (row+diff<=8){
-            if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row+diff));
-            if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row+diff));
+            if (colIdx+diff<=7 && valid[0]){
+                valid[0] = computeDiagonalHelp(color, moves, position, row+diff, colIdx+diff);
+            }
+            if (colIdx-diff>=0 && valid[1]){
+                valid[1] = computeDiagonalHelp(color, moves, position, row+diff, colIdx-diff);
+            }
         }
+
         if (row-diff>=1){
-            if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row-diff));
-            if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row-diff));
+            if (colIdx+diff<=7 && valid[2]){
+                valid[2] = computeDiagonalHelp(color, moves, position, row-diff, colIdx+diff);
+            }
+            if (colIdx-diff>=0 && valid[3]){
+                valid[3] = computeDiagonalHelp(color, moves, position, row-diff, colIdx-diff);
+            }
         }
     }
+    // for (let diff=1; diff<=7; diff++){
+    //     if (row+diff<=8){
+    //         if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row+diff));
+    //         if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row+diff));
+    //     }
+    //     if (row-diff>=1){
+    //         if (colIdx+diff<=7) moves.push(COLUMNS[colIdx+diff]+(row-diff));
+    //         if (colIdx-diff>=0) moves.push(COLUMNS[colIdx-diff]+(row-diff));
+    //     }
+    // }
 
     return moves;
 }
@@ -208,11 +251,12 @@ function computeKnight(source){
     return moves;
 }
 
-function computeBishop(source){
-    let moves = computeDiagonal(source);
+function computeBishop(source, piece, position){
+    let moves = computeDiagonal(source, piece, position);
     console.log("All possible moves for Bishop:")
     console.log(moves);
     console.log('+++++++++++++++++++++')
+    return moves;
 }
 
 function computeRook(source, piece, position){
@@ -237,8 +281,8 @@ function validateKnight(source, target, piece, newPos, oldPos, orientation){
 function validateQueen(source, target, piece, newPos, oldPos, orientation){}
 
 function validateBishop(source, target, piece, newPos, oldPos, orientation){
-    computeBishop(source);
-    return true;
+    if (computeBishop(source, piece, oldPos).includes(target)) return true;
+    return false;
 }
 function validateRook(source, target, piece, newPos, oldPos, orientation){
     if (computeRook(source,piece,oldPos).includes(target)) return true;
