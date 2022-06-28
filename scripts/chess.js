@@ -1,5 +1,5 @@
 const COLUMNS = 'abcdefgh'.split('');
-
+let enpTarget = null;
 /**
  *
  * @param source the source of the piece being dragged
@@ -282,6 +282,39 @@ function computeQueen(source, piece, position){
 }
 
 
+function computePawn(source, piece, position){
+    //TODO: Add en passant
+    let color = piece.split('')[0];
+    let row = parseInt(source.split('')[1]);
+    let col = source.split('')[0];
+    let colIdx = COLUMNS.indexOf(col);
+    let moves = [];
+
+    let dir = 1; //for switching direction based on color of piece
+
+    if (color==='b')  dir = -1;
+
+    if (position[col+(row+dir)]===undefined){
+        moves.push(col+(row+dir));
+        if (position[col+(row+2*dir)]===undefined){
+            if ((color==='w' && row===2) || (color==='b' && row===7)) moves.push(col+(row+2*dir));
+        }
+    }
+
+    for (let diff of [-1,1]){
+        let targetSq = COLUMNS[colIdx+diff]+(row+dir)
+        let targetPc = position[targetSq];
+        if (targetPc!==undefined){
+            if (!targetPc.startsWith(color)) moves.push(targetSq);
+        }
+    }
+    console.log('All possible moves for pawn:');
+    console.log(moves);
+    console.log('+++++++++++++++++++++++')
+    return moves;
+}
+
+
 //TODO: Implement individual validation functions
 //TODO: Check if newPos will be in check if initial move check passes
 function validateKing(source, target, piece, newPos, oldPos, orientation){
@@ -306,8 +339,10 @@ function validateRook(source, target, piece, newPos, oldPos, orientation){
     if (computeRook(source,piece,oldPos).includes(target)) return true;
     return false;
 }
+
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
-    return true;
+    if (computePawn(source,piece,oldPos).includes(target)) return true;
+    return false;
 }
 
 //TODO: implement a function to check if a given square is in check by opposite color
