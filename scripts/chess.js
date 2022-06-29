@@ -29,6 +29,9 @@ function onDrop (source, target, piece, newPos, oldPos, orientation){
 
         if (orientation==='white') board.orientation('black');
         else board.orientation('white');
+        //TODO: for testing REMOVE
+        sqCheck('e8', newPos, 'b');
+        sqCheck('e1',newPos, 'w');
     }else{
         return 'snapback';
     }
@@ -315,6 +318,16 @@ function computePawn(source, piece, position){
 }
 
 
+function computeDet(source, piece, position){
+    let compFunc=computePawn;
+    if (piece.search(/K$/)!==-1) compFunc = computeKing;
+    else if(piece.search(/Q$/)!==-1) compFunc = computeQueen;
+    else if(piece.search(/N$/)!==-1) compFunc = computeKnight;
+    else if (piece.search(/B$/)!==-1) compFunc = computeBishop;
+    else if (piece.search(/R$/)!==-1) compFunc = computeRook;
+    return compFunc(source,piece,position);
+}
+
 //TODO: Implement individual validation functions
 //TODO: Check if newPos will be in check if initial move check passes
 function validateKing(source, target, piece, newPos, oldPos, orientation){
@@ -341,10 +354,23 @@ function validateRook(source, target, piece, newPos, oldPos, orientation){
 }
 
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
+    sqCheck('a', newPos, 'w');
     if (computePawn(source,piece,oldPos).includes(target)) return true;
     return false;
 }
 
 //TODO: implement a function to check if a given square is in check by opposite color
+function sqCheck(square, position, color){
+    console.log('');
+    for (let sq in position){
+        if (position[sq].charAt(0)!==color) {
+            if (computeDet(sq, position[sq], position).includes(square)){
+                console.log(position[square]+'is in check by '+position[sq]);
+                console.log('$$$$$$$$$$$$$$$');
+            }
+        }
+    }
+
+}
 
 
