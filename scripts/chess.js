@@ -359,7 +359,23 @@ function validatePawn(source, target, piece, newPos, oldPos, orientation){
     return false;
 }
 
-//TODO: implement a function to check if a given square is in check by opposite color
+
+/**
+ * returns the square where the king of the color provided by the color parameter
+ * is currently present.
+ * @param position position on the board
+ * @param color the color of the king to find
+ * @return {string} the king's current position
+ */
+function findKing(position, color){
+    let king = color+'K';
+    for (let square in position){
+        if (position[square]===king) return square;
+    }
+}
+
+
+//TODO: Test
 function sqCheck(square, position, color){
     console.log('');
     for (let sq in position){
