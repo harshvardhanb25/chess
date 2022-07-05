@@ -19,19 +19,19 @@ function onDragStart(source, piece, position, orientation){
 }
 
 function onDrop (source, target, piece, newPos, oldPos, orientation){
-    console.log('Piece Dropped:');
-    console.log(source);
-    console.log(target);
-    console.log(oldPos);
-    console.log('++++++++++++++');
+    // console.log('Piece Dropped:');
+    // console.log(source);
+    // console.log(target);
+    // console.log(oldPos);
+    // console.log('++++++++++++++');
     if (validate(source, target, piece, newPos, oldPos, orientation)){
         //TODO: Check if game is over
 
         if (orientation==='white') board.orientation('black');
         else board.orientation('white');
         //TODO: for testing REMOVE
-        sqCheck('e8', newPos, 'b');
-        sqCheck('e1',newPos, 'w');
+        // sqCheck('e8', newPos, 'b');
+        // sqCheck('e1',newPos, 'w');
     }else{
         return 'snapback';
     }
@@ -52,7 +52,10 @@ function validate(source, target, piece, newPos, oldPos, orientation){
     else if (piece.search(/B$/)!==-1) valFunc = validateBishop;
     else if (piece.search(/R$/)!==-1) valFunc = validateRook;
 
-    return valFunc(source, target, piece, newPos, oldPos, orientation);
+    if (valFunc(source, target, piece, newPos, oldPos, orientation)){
+        return !sqCheck(findKing(newPos, turn),newPos,turn);
+    }
+    return false;
     // if (oldPos[target]===undefined){
     //     return valFunc(source, target, piece, newPos, oldPos, orientation);
     // }else if(!oldPos[target].startsWith(turn)){
@@ -197,6 +200,7 @@ function computeStraight(source, piece, position){
  * @returns {*[]} Array containing all possible squares
  */
 function computeKing(source, piece, position){
+    //TODO: Add castling
     let row = parseInt(source.split('')[1]);
     let colIdx = COLUMNS.indexOf(source.split('')[0]);
     let moves = [];
@@ -217,9 +221,9 @@ function computeKing(source, piece, position){
         }
     }
 
-    console.log("All possible moves for king:")
-    console.log(moves);
-    console.log('+++++++++++++++++++++')
+    // console.log("All possible moves for king:")
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++')
     return moves;
 }
 
@@ -252,25 +256,25 @@ function computeKnight(source, piece, position){
             }
         }
     }
-    console.log("All possible moves for knight:")
-    console.log(moves);
-    console.log('+++++++++++++++++++++')
+    // console.log("All possible moves for knight:")
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++')
     return moves;
 }
 
 function computeBishop(source, piece, position){
     let moves = computeDiagonal(source, piece, position);
-    console.log("All possible moves for Bishop:")
-    console.log(moves);
-    console.log('+++++++++++++++++++++')
+    // console.log("All possible moves for Bishop:")
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++')
     return moves;
 }
 
 function computeRook(source, piece, position){
     let moves = computeStraight(source, piece, position);
-    console.log("All possible moves for Rook:");
-    console.log(moves);
-    console.log('+++++++++++++++++++++');
+    // console.log("All possible moves for Rook:");
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++');
     return moves;
 }
 
@@ -278,9 +282,9 @@ function computeRook(source, piece, position){
 function computeQueen(source, piece, position){
     let moves = computeStraight(source, piece, position);
     moves = moves.concat(computeDiagonal(source,piece, position));
-    console.log("All possible moves for queen:");
-    console.log(moves);
-    console.log('+++++++++++++++++++++');
+    // console.log("All possible moves for queen:");
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++');
     return moves;
 }
 
@@ -311,9 +315,9 @@ function computePawn(source, piece, position){
             if (!targetPc.startsWith(color)) moves.push(targetSq);
         }
     }
-    console.log('All possible moves for pawn:');
-    console.log(moves);
-    console.log('+++++++++++++++++++++++')
+    // console.log('All possible moves for pawn:');
+    // console.log(moves);
+    // console.log('+++++++++++++++++++++++')
     return moves;
 }
 
@@ -354,7 +358,6 @@ function validateRook(source, target, piece, newPos, oldPos, orientation){
 }
 
 function validatePawn(source, target, piece, newPos, oldPos, orientation){
-    sqCheck('a', newPos, 'w');
     if (computePawn(source,piece,oldPos).includes(target)) return true;
     return false;
 }
@@ -372,10 +375,19 @@ function findKing(position, color){
     for (let square in position){
         if (position[square]===king) return square;
     }
+
 }
 
 
 //TODO: Test
+/**
+ * Determines if a square is under attack from the other color. Uses the compute
+ * functions on all enemy pieces until apiece attacking the square is found.
+ * @param square the square to check
+ * @param position the position of the board
+ * @param color the current player's color char ('w' or 'b')
+ * @return {boolean} true if square is under attack, false otherwise
+ */
 function sqCheck(square, position, color){
     console.log('');
     for (let sq in position){
@@ -383,10 +395,11 @@ function sqCheck(square, position, color){
             if (computeDet(sq, position[sq], position).includes(square)){
                 console.log(position[square]+'is in check by '+position[sq]);
                 console.log('$$$$$$$$$$$$$$$');
+                return true;
             }
         }
     }
-
+    return false
 }
 
 
